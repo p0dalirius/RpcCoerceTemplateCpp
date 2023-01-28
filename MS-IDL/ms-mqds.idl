@@ -1,0 +1,58 @@
+ import "ms-dtyp.idl";
+ import "ms-mqmq.idl";
+  
+ const unsigned long PRLT        = 0;
+ const unsigned long PRLE        = 1;
+ const unsigned long PRGT        = 2;
+ const unsigned long PRGE        = 3;
+ const unsigned long PREQ        = 4;
+ const unsigned long PRNE        = 5;
+  
+  
+ typedef struct  tagMQPROPERTYRESTRICTION
+ {
+         unsigned long rel;
+         unsigned long prop;
+         PROPVARIANT   prval;
+ } MQPROPERTYRESTRICTION;
+  
+ typedef struct  tagMQRESTRICTION
+ {
+         [range(0,128)] unsigned long cRes;
+         [size_is(cRes)] MQPROPERTYRESTRICTION  * paPropRes;
+  
+ }       MQRESTRICTION;
+  
+ typedef struct  tagMQCOLUMNSET
+ {
+     [range(0,128)] unsigned long cCol;
+     [size_is(cCol)] PROPID  *aCol;
+ } MQCOLUMNSET;
+  
+ const unsigned long QUERY_SORTASCEND     = 0;
+ const unsigned long QUERY_SORTDESCEND    = 1;
+  
+ typedef struct  tagMQSORTKEY
+ {
+     unsigned long propColumn;
+     unsigned long dwOrder;
+ } MQSORTKEY;
+  
+ typedef struct  tagMQSORTSET
+ {
+     [range(0,128)] unsigned long cCol;
+     [size_is(cCol)] MQSORTKEY  *aCol;
+ } MQSORTSET; 
+  
+ [
+ version(1.0),
+ uuid(77df7a80-f298-11d0-8358-00a024c480a8),
+ pointer_default(unique)
+ ]
+  
+ interface dscomm
+ {
+ /*==================================================
+  Structures
+ ===================================================*/
+

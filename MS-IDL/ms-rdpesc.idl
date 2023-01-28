@@ -1,0 +1,138 @@
+ import "ms-dtyp.idl";
+ import "ms-dcom.idl";
+  
+ [
+     uuid(A35AF600-9CF4-11CD-A076-08002B2BD711),
+     version(1.0),
+     pointer_default(unique)
+ ]
+ interface type_scard_pack
+ {
+  
+ //
+ // Packing for calls that use the same params
+ //
+ typedef struct _REDIR_SCARDCONTEXT
+ {
+     [range(0, 16)]                  unsigned long       cbContext;      
+     [unique] [size_is(cbContext)]   byte               *pbContext;
+ } REDIR_SCARDCONTEXT;
+  
+ typedef struct _REDIR_SCARDHANDLE
+ {
+                          REDIR_SCARDCONTEXT              Context;
+     [range(0, 16)]       unsigned long                   cbHandle;
+     [size_is(cbHandle)]  byte                           *pbHandle;
+ } REDIR_SCARDHANDLE;
+  
+ typedef struct _long_Return
+ {
+     long                 ReturnCode;
+ } long_Return;
+  
+ typedef struct _longAndMultiString_Return
+ {
+                                          long            ReturnCode;
+     [range(0, 65536)]                    unsigned long   cBytes;     
+     [unique] [size_is(cBytes)]           byte           *msz;
+ } ListReaderGroups_Return, ListReaders_Return;
+  
+ typedef struct _Context_Call
+ {
+     REDIR_SCARDCONTEXT                          Context;
+ } Context_Call;
+  
+ typedef struct _ContextAndStringA_Call
+ {
+              REDIR_SCARDCONTEXT                          Context;
+     [string] const char *                                sz;
+ } ContextAndStringA_Call;
+  
+ typedef struct _ContextAndStringW_Call
+ {
+              REDIR_SCARDCONTEXT                          Context;
+     [string] const wchar_t *                             sz;
+ } ContextAndStringW_Call;
+  
+  
+ typedef struct _ContextAndTwoStringA_Call
+ {
+              REDIR_SCARDCONTEXT                          Context;
+     [string] const char *                                sz1;
+     [string] const char *                                sz2;
+ } ContextAndTwoStringA_Call;
+  
+ typedef struct _ContextAndTwoStringW_Call
+ {
+              REDIR_SCARDCONTEXT                          Context;
+     [string] const wchar_t *                             sz1;
+     [string] const wchar_t *                             sz2;
+ } ContextAndTwoStringW_Call;
+  
+ //
+ // Call specific packing
+ //
+ typedef struct _EstablishContext_Call
+ {
+     unsigned long                               dwScope;
+ } EstablishContext_Call;
+  
+ typedef struct _EstablishContext_Return
+ {
+     long                                        ReturnCode;
+     REDIR_SCARDCONTEXT                          Context;
+ } EstablishContext_Return;
+  
+  
+ typedef struct _ListReaderGroups_Call
+ {
+     REDIR_SCARDCONTEXT                          Context;
+     long                                        fmszGroupsIsNULL;
+     unsigned long                               cchGroups;
+ } ListReaderGroups_Call;
+  
+  
+ typedef struct _ListReaders_Call
+ {
+                                REDIR_SCARDCONTEXT   Context;
+     [range(0, 65536)]          unsigned long        cBytes;
+     [unique] [size_is(cBytes)] const byte          *mszGroups;
+                             long                 fmszReadersIsNULL;
+                                unsigned long        cchReaders;
+ } ListReaders_Call;
+  
+ typedef struct _ReaderState_Common_Call
+ {
+                       unsigned long             dwCurrentState;
+                       unsigned long             dwEventState;
+     [range(0, 36)]    unsigned long             cbAtr;
+                       byte                      rgbAtr[36];
+ } ReaderState_Common_Call;
+  
+ typedef struct _ReaderStateA
+ {
+     [string] const char *                                szReader;
+              ReaderState_Common_Call                     Common;
+ } ReaderStateA;
+  
+ typedef struct _ReaderStateW
+ {
+     [string] const wchar_t *                             szReader;
+              ReaderState_Common_Call                     Common;
+ } ReaderStateW;
+  
+ typedef struct _ReaderState_Return
+ {
+                    unsigned long                dwCurrentState;
+                    unsigned long                dwEventState;
+     [range(0, 36)] unsigned long                cbAtr;
+                    byte                         rgbAtr[36];
+ } ReaderState_Return;
+  
+ typedef struct _GetStatusChangeA_Call
+ {
+                         REDIR_SCARDCONTEXT      Context;
+                         unsigned long           dwTimeOut;
+     [range(0, 11)]      unsigned long           cReaders;
+     [size_is(cReaders)] ReaderStateA           *rgReaderStates;
+
