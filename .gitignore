@@ -32,6 +32,6 @@
 *.app
 
 # Visual Studio Code
-.vs/*
-x64/*
-PocArgs/x64/*
+./.vs/*
+./x64/*
+./RpcCoerceTemplateCpp/x64/*
