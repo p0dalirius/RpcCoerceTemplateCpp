@@ -13,23 +13,23 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\ArgumentsParser">
-      <UniqueIdentifier>{0f99c303-3f83-4422-920d-4ae78dfcb540}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\RpcUtils">
-      <UniqueIdentifier>{09e60ccb-977a-4dfb-9e21-2b60612cd64a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\idl">
-      <UniqueIdentifier>{f3ae625e-8a21-45ae-8c5d-48ea6e5c6f24}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\ArgumentsParser">
-      <UniqueIdentifier>{993f6aa6-e7eb-4150-aa8d-ceddcbf74e52}</UniqueIdentifier>
+      <UniqueIdentifier>{44885bcb-027e-4f93-8f77-9faf24e352b9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\RpcUtils">
-      <UniqueIdentifier>{6767e1a1-ebc5-42d3-b976-0c6dd2e65cbe}</UniqueIdentifier>
+    <Filter Include="Header Files\ArgumentsParser">
+      <UniqueIdentifier>{829a9783-f502-43e2-83c2-e9291707a3eb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\idl">
-      <UniqueIdentifier>{8566a1a2-5dc5-456f-8e8d-fc36243072d7}</UniqueIdentifier>
+      <UniqueIdentifier>{87db4d3b-f580-406b-b48c-fd07658e2abb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\idl">
+      <UniqueIdentifier>{9dee104e-9360-4577-8aea-138c86d1311f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RpcUtils">
+      <UniqueIdentifier>{b403a284-8562-4063-b974-d00ad3c156e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RpcUtils">
+      <UniqueIdentifier>{6eeb55f6-3973-4a8b-aec8-ebcc255f748f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,40 +39,40 @@
     <ClCompile Include="ArgumentsParser\Argument.cpp">
       <Filter>Source Files\ArgumentsParser</Filter>
     </ClCompile>
-    <ClCompile Include="ArgumentsParser\ArgumentsParser.cpp">
-      <Filter>Source Files\ArgumentsParser</Filter>
-    </ClCompile>
     <ClCompile Include="ArgumentsParser\ArgumentType.cpp">
       <Filter>Source Files\ArgumentsParser</Filter>
     </ClCompile>
-    <ClCompile Include="RpcUtils\Utils.cpp">
-      <Filter>Source Files\RpcUtils</Filter>
+    <ClCompile Include="ArgumentsParser\ArgumentsParser.cpp">
+      <Filter>Source Files\ArgumentsParser</Filter>
     </ClCompile>
     <ClCompile Include="idl\ms-efsrpc_c.c">
       <Filter>Source Files\idl</Filter>
     </ClCompile>
+    <ClCompile Include="RpcUtils\Utils.cpp">
+      <Filter>Source Files\RpcUtils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ArgumentsParser\Argument.h">
+    <ClInclude Include="ArgumentsParser\ArgumentsParser.h">
       <Filter>Header Files\ArgumentsParser</Filter>
     </ClInclude>
-    <ClInclude Include="ArgumentsParser\ArgumentsParser.h">
+    <ClInclude Include="ArgumentsParser\Argument.h">
       <Filter>Header Files\ArgumentsParser</Filter>
     </ClInclude>
     <ClInclude Include="ArgumentsParser\ArgumentType.h">
       <Filter>Header Files\ArgumentsParser</Filter>
     </ClInclude>
-    <ClInclude Include="RpcUtils\Utils.hpp">
-      <Filter>Header Files\RpcUtils</Filter>
-    </ClInclude>
     <ClInclude Include="idl\ms-dtyp.h">
+      <Filter>Header Files\idl</Filter>
+    </ClInclude>
+    <ClInclude Include="idl\ms-efsrpc_h.h">
       <Filter>Header Files\idl</Filter>
     </ClInclude>
     <ClInclude Include="idl\ms-dtyp_h.h">
       <Filter>Header Files\idl</Filter>
     </ClInclude>
-    <ClInclude Include="idl\ms-efsrpc_h.h">
-      <Filter>Header Files\idl</Filter>
+    <ClInclude Include="RpcUtils\Utils.hpp">
+      <Filter>Header Files\RpcUtils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

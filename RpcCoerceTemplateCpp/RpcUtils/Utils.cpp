@@ -14,7 +14,7 @@ void PrintWin32Error(DWORD dwError)
 
 void print_auth_identity(SEC_WINNT_AUTH_IDENTITY_A * authidentity)
 {
-	printf("[debug] SEC_WINNT_AUTH_IDENTITY * authidentity = 0x%08x\n", (unsigned int)authidentity);
+	printf("[debug] SEC_WINNT_AUTH_IDENTITY * authidentity = 0x%08p\n", authidentity);
 	printf("      | (%d) authidentity->User: %s\n", authidentity->UserLength, authidentity->User);
 	printf("      | (%d) authidentity->Domain: %s\n", authidentity->DomainLength, authidentity->Domain);
 	printf("      | (%d) authidentity->Password: %s\n", authidentity->PasswordLength, authidentity->Password);
