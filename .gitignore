@@ -33,5 +33,9 @@
 
 # Visual Studio Code
 ./.vs/*
+./Debug/*
+./Release/*
 ./x64/*
+./RpcCoerceTemplateCpp/Debug/*
+./RpcCoerceTemplateCpp/Release/*
 ./RpcCoerceTemplateCpp/x64/*

