@@ -77,12 +77,13 @@ void print_auth_params(unsigned long AuthnLevel, unsigned long AuthnSvc, unsigne
 }
 
 
-// Source: https://github.com/microsoft/Windows-classic-samples/blob/main/Samples/Win7Samples/netds/rpc/rpcsvc/Client.C#L589-L598
+// Source: https://docs.microsoft.com/en-us/windows/win32/rpc/the-midl-user-allocate-function
 void* __RPC_USER MIDL_user_allocate(size_t size)
 {
 	return(HeapAlloc(GetProcessHeap(), HEAP_GENERATE_EXCEPTIONS, size));
 }
 
+// Source: https://docs.microsoft.com/en-us/windows/win32/rpc/the-midl-user-free-function
 void __RPC_USER MIDL_user_free(void* pointer)
 {
 	HeapFree(GetProcessHeap(), 0, pointer);
