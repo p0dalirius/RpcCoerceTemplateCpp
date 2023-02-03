@@ -135,6 +135,7 @@
     <ClCompile Include="ArgumentsParser\ArgumentType.cpp" />
     <ClCompile Include="coerce.cpp" />
     <ClCompile Include="idl\ms-efsrpc_c.c" />
+    <ClCompile Include="ImpersonateUser.cpp" />
     <ClCompile Include="RpcUtils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +145,7 @@
     <ClInclude Include="idl\ms-dtyp.h" />
     <ClInclude Include="idl\ms-dtyp_h.h" />
     <ClInclude Include="idl\ms-efsrpc_h.h" />
+    <ClInclude Include="ImpersonateUser.h" />
     <ClInclude Include="RpcUtils\Utils.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -3,7 +3,7 @@
 #include <tchar.h>
 #include <SDKDDKVer.h>
 #include <Windows.h>
-
+#include "ImpersonateUser.h"
 #include "RpcUtils/Utils.hpp"
 #include "ArgumentsParser/ArgumentsParser.h"
 
@@ -35,18 +35,26 @@ handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAdd
 
 	unsigned long AuthnLevel = RPC_C_AUTHN_LEVEL_PKT_PRIVACY;
 	unsigned long AuthnSvc = RPC_C_AUTHN_WINNT;
-	unsigned long AuthzSvc = RPC_C_AUTHZ_DEFAULT;
+	unsigned long AuthzSvc = RPC_C_AUTHZ_NONE;
+
+	ImpersonateUser obLogon;
 
 	// Auth Identity structure
 	SEC_WINNT_AUTH_IDENTITY_W AuthIdentity;
 	SecureZeroMemory(&AuthIdentity, sizeof(AuthIdentity));
-	AuthIdentity.User = (unsigned short *)"poc";
-	AuthIdentity.UserLength = (unsigned long)strlen((char*)AuthIdentity.User);
-	AuthIdentity.Password = (unsigned short*)"Admin123!";
-	AuthIdentity.PasswordLength = (unsigned long)strlen((char*)AuthIdentity.Password);
-	AuthIdentity.Domain = (unsigned short*)"LAB.local";
-	AuthIdentity.DomainLength = (unsigned long)strlen((char*)AuthIdentity.Domain);
-	AuthIdentity.Flags = SEC_WINNT_AUTH_IDENTITY_UNICODE;
+	//AuthIdentity.User = (unsigned short *)"poc";
+	//AuthIdentity.UserLength = (unsigned long)strlen((char*)AuthIdentity.User);
+	//AuthIdentity.Password = (unsigned short*)"Admin123!";
+	//AuthIdentity.PasswordLength = (unsigned long)strlen((char*)AuthIdentity.Password);
+	//AuthIdentity.Domain = (unsigned short*)"LAB.local";
+	//AuthIdentity.DomainLength = (unsigned long)strlen((char*)AuthIdentity.Domain);
+	//AuthIdentity.Flags = SEC_WINNT_AUTH_IDENTITY_UNICODE;
+
+	// Impersonate the user
+	if (!obLogon.Logon(L"dev", L"DEV", L"dev")) {
+		printf("[!] Error: Impersonated user failed.\n");
+		return (0);
+	}
 
 	swprintf(NetworkAddr, MAX_PATH, L"\\\\%s", target);
 	// https://learn.microsoft.com/en-us/windows/win32/api/rpcdce/nf-rpcdce-rpcstringbindingcomposew
@@ -56,7 +64,8 @@ handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAdd
 	if (RpcStatus != RPC_S_OK) {
 		printf("[!] Error: RpcStringBindingComposeW returned %d\n", RpcStatus);
 		return (0);
-	} else {
+	}
+	else {
 		if (verbose) {
 			printf("[>] Created RPC StringBinding: %ls\n", (wchar_t*)StringBinding);
 		}
@@ -67,7 +76,8 @@ handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAdd
 	if (RpcStatus != RPC_S_OK) {
 		printf("[!] Error: RpcBindingFromStringBindingW returned %d\n", RpcStatus);
 		return (0);
-	} else {
+	}
+	else {
 		if (verbose) {
 			printf("[>] Successfully created binding from string.\n");
 		}
@@ -78,18 +88,22 @@ handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAdd
 	if (RpcStatus != RPC_S_OK) {
 		printf("[!] Error: RpcStringFreeW returned %d\n", RpcStatus);
 		return (0);
-	} else {
+	}
+	else {
 		if (verbose) {
 			printf("[>] Successfully freed RPC StringBinding.\n");
 		}
 	}
 
 	// http://msdn2.microsoft.com/en-us/library/ms682007.aspx
+	// This function is removed in rpcrt4.dll >= 10.0.17134
+	// src: https://learn.microsoft.com/en-us/uwp/win32-and-com/win32-extension-apis)
 	if (AuthIdentity.UserLength == 0) {
 		// Context with default Credentials
 		printf("[>] Using current user session credentials.\n");
 		RpcStatus = RpcBindingSetAuthInfo(hBinding, NULL, AuthnLevel, AuthnSvc, NULL, AuthzSvc);
-	} else {
+	}
+	else {
 		// Context with supplied Credentials
 		printf("[>] Using user supplied credentials.\n");
 		if (verbose) {
@@ -101,7 +115,8 @@ handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAdd
 	if (RpcStatus != RPC_S_OK) {
 		PrintWin32Error(RpcStatus);
 		return (0);
-	} else {
+	}
+	else {
 		if (verbose) {
 			printf("[>] Authentication information successfully set.\n");
 		}

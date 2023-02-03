@@ -51,6 +51,9 @@
     <ClCompile Include="RpcUtils\Utils.cpp">
       <Filter>Source Files\RpcUtils</Filter>
     </ClCompile>
+    <ClCompile Include="ImpersonateUser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ArgumentsParser\ArgumentsParser.h">
@@ -73,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="RpcUtils\Utils.hpp">
       <Filter>Header Files\RpcUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="ImpersonateUser.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

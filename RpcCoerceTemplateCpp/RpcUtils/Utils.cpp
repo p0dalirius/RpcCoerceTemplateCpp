@@ -88,3 +88,52 @@ void __RPC_USER MIDL_user_free(void* pointer)
 {
 	HeapFree(GetProcessHeap(), 0, pointer);
 }
+
+
+void get_rpc_runtime_version(wchar_t* pszFilePath) {
+	// Source: https://stackoverflow.com/a/940784
+	// Docs: https://learn.microsoft.com/en-us/windows/win32/api/winver/nf-winver-getfileversioninfoa
+	DWORD dwSize = 0;
+	BYTE* pbVersionInfo = NULL;
+	VS_FIXEDFILEINFO* pFileInfo = NULL;
+	UINT puLenFileInfo = 0;
+
+	// Get the version information for the file requested
+	dwSize = GetFileVersionInfoSize(pszFilePath, NULL);
+	if (dwSize == 0) {
+		printf("Error in GetFileVersionInfoSize: %d\n", GetLastError());
+		return;
+	}
+
+	pbVersionInfo = new BYTE[dwSize];
+
+	if (!GetFileVersionInfo(pszFilePath, 0, dwSize, pbVersionInfo)) {
+		printf("Error in GetFileVersionInfo: %d\n", GetLastError());
+		delete[] pbVersionInfo;
+		return;
+	}
+
+	if (!VerQueryValue(pbVersionInfo, TEXT("\\"), (LPVOID*)&pFileInfo, &puLenFileInfo)) {
+		printf("Error in VerQueryValue: %d\n", GetLastError());
+		delete[] pbVersionInfo;
+		return;
+	}
+
+	// pFileInfo->dwFileVersionMS is usually zero. However, you should check
+	// this if your version numbers seem to be wrong
+	printf("File Version: %d.%d.%d.%d\n",
+		(pFileInfo->dwFileVersionLS >> 24) & 0xff,
+		(pFileInfo->dwFileVersionLS >> 16) & 0xff,
+		(pFileInfo->dwFileVersionLS >> 8) & 0xff,
+		(pFileInfo->dwFileVersionLS >> 0) & 0xff
+	);
+
+	// pFileInfo->dwProductVersionMS is usually zero. However, you should check
+	// this if your version numbers seem to be wrong.
+	printf("Product Version: %d.%d.%d.%d\n",
+		(pFileInfo->dwProductVersionLS >> 24) & 0xff,
+		(pFileInfo->dwProductVersionLS >> 16) & 0xff,
+		(pFileInfo->dwProductVersionLS >> 8) & 0xff,
+		(pFileInfo->dwProductVersionLS >> 0) & 0xff
+	);
+}
