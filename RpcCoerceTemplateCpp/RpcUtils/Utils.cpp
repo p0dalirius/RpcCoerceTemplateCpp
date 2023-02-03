@@ -1,5 +1,6 @@
 #include "Utils.hpp"
 #include <map>
+#include <list>
 #include <string>
 
 
@@ -89,9 +90,34 @@ void __RPC_USER MIDL_user_free(void* pointer)
 	HeapFree(GetProcessHeap(), 0, pointer);
 }
 
+bool cmp_wchar_t(wchar_t* first, wchar_t* second) {
+	return wcscmp(first, second) == 0;
+}
+
 void get_rpc_runtime_version() {
-	printf("\n[>] Runtime information (for debug):\n");
-	print_pe_file_version(L"C:\\Windows\\System32\\rpcrt4.dll");
+	wchar_t* path; // Length of MAX_PATH
+	std::list<void*> used_functions;
+	std::list<wchar_t*> libraries_paths;
+	
+	used_functions.push_back(&RpcStringBindingComposeW);
+	used_functions.push_back(&RpcBindingFromStringBindingW);
+	used_functions.push_back(&RpcStringFreeW);
+	used_functions.push_back(&RpcBindingSetAuthInfoW);
+	used_functions.push_back(&RpcBindingFree);
+	used_functions.unique();
+
+	printf("[>] Runtime information (for debug):\n");
+	for (auto& ptr : used_functions) {
+		path = (wchar_t* )malloc(sizeof(wchar_t) * MAX_PATH);
+		if (get_library_path_from_function(ptr, path)) {
+			// printf("Path found: %ls", path);
+			libraries_paths.push_back(path);
+		}
+	}
+	libraries_paths.unique(cmp_wchar_t);
+	for (auto& ptr : libraries_paths) {
+		print_pe_file_version(ptr);
+	}
 	printf("\n");
 }
 
@@ -138,4 +164,27 @@ void print_pe_file_version(const wchar_t* pszFilePath) {
 		(pFileInfo->dwProductVersionLS >> 16) & 0xffff,
 		(pFileInfo->dwProductVersionLS >> 0) & 0xffff
 	);
+}
+
+
+int get_library_path_from_function(void* functionpointer, wchar_t* path) {
+	HMODULE hm = NULL;
+	wchar_t _path[MAX_PATH];
+
+	if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCWSTR)functionpointer, &hm) == 0) {
+		int ret = GetLastError();
+		fprintf(stderr, "GetModuleHandle failed, error = %d\n", ret);
+		// Return or however you want to handle an error.
+		return 0;
+	}
+	if (GetModuleFileName(hm, _path, sizeof(_path)) == 0) {
+		int ret = GetLastError();
+		fprintf(stderr, "GetModuleFileName failed, error = %d\n", ret);
+		// Return or however you want to handle an error.
+		return 0;
+	}
+	wcsncpy_s(path, MAX_PATH-1, _path, MAX_PATH-1);
+
+	// The path variable should now contain the full filepath for this DLL.
+	return 1;
 }

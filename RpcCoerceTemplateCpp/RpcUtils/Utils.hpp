@@ -18,3 +18,4 @@ void __RPC_USER MIDL_user_free(void* pointer);
 
 void get_rpc_runtime_version();
 void print_pe_file_version(const wchar_t* pszFilePath);
+int get_library_path_from_function(void* functionpointer, wchar_t path[MAX_PATH]);
