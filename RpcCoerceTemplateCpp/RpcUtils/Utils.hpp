@@ -16,4 +16,5 @@ void print_auth_params(unsigned long AuthnLevel, unsigned long AuthnSvc, unsigne
 void* __RPC_USER MIDL_user_allocate(size_t size);
 void __RPC_USER MIDL_user_free(void* pointer);
 
-void get_rpc_runtime_version(wchar_t* pszFilePath);
+void get_rpc_runtime_version();
+void print_pe_file_version(const wchar_t* pszFilePath);

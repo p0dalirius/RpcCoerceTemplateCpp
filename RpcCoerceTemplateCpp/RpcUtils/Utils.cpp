@@ -89,17 +89,23 @@ void __RPC_USER MIDL_user_free(void* pointer)
 	HeapFree(GetProcessHeap(), 0, pointer);
 }
 
+void get_rpc_runtime_version() {
+	printf("\n[>] Runtime information (for debug):\n");
+	print_pe_file_version(L"C:\\Windows\\System32\\rpcrt4.dll");
+	printf("\n");
+}
 
-void get_rpc_runtime_version(wchar_t* pszFilePath) {
-	// Source: https://stackoverflow.com/a/940784
+void print_pe_file_version(const wchar_t* pszFilePath) {
+	// Adapted from: https://stackoverflow.com/a/940784
 	// Docs: https://learn.microsoft.com/en-us/windows/win32/api/winver/nf-winver-getfileversioninfoa
+
 	DWORD dwSize = 0;
 	BYTE* pbVersionInfo = NULL;
 	VS_FIXEDFILEINFO* pFileInfo = NULL;
 	UINT puLenFileInfo = 0;
 
 	// Get the version information for the file requested
-	dwSize = GetFileVersionInfoSize(pszFilePath, NULL);
+	dwSize = GetFileVersionInfoSizeW(pszFilePath, NULL);
 	if (dwSize == 0) {
 		printf("Error in GetFileVersionInfoSize: %d\n", GetLastError());
 		return;
@@ -107,33 +113,29 @@ void get_rpc_runtime_version(wchar_t* pszFilePath) {
 
 	pbVersionInfo = new BYTE[dwSize];
 
-	if (!GetFileVersionInfo(pszFilePath, 0, dwSize, pbVersionInfo)) {
+	if (!GetFileVersionInfoW(pszFilePath, 0, dwSize, pbVersionInfo)) {
 		printf("Error in GetFileVersionInfo: %d\n", GetLastError());
 		delete[] pbVersionInfo;
 		return;
 	}
 
-	if (!VerQueryValue(pbVersionInfo, TEXT("\\"), (LPVOID*)&pFileInfo, &puLenFileInfo)) {
+	if (!VerQueryValueW(pbVersionInfo, TEXT("\\"), (LPVOID*)&pFileInfo, &puLenFileInfo)) {
 		printf("Error in VerQueryValue: %d\n", GetLastError());
 		delete[] pbVersionInfo;
 		return;
 	}
 
-	// pFileInfo->dwFileVersionMS is usually zero. However, you should check
-	// this if your version numbers seem to be wrong
-	printf("File Version: %d.%d.%d.%d\n",
-		(pFileInfo->dwFileVersionLS >> 24) & 0xff,
-		(pFileInfo->dwFileVersionLS >> 16) & 0xff,
-		(pFileInfo->dwFileVersionLS >> 8) & 0xff,
-		(pFileInfo->dwFileVersionLS >> 0) & 0xff
-	);
+	printf("  | \"%ls\" : (File Version: %d.%d.%d.%d) (Product Version: %d.%d.%d.%d)\n",
+		pszFilePath,
 
-	// pFileInfo->dwProductVersionMS is usually zero. However, you should check
-	// this if your version numbers seem to be wrong.
-	printf("Product Version: %d.%d.%d.%d\n",
-		(pFileInfo->dwProductVersionLS >> 24) & 0xff,
-		(pFileInfo->dwProductVersionLS >> 16) & 0xff,
-		(pFileInfo->dwProductVersionLS >> 8) & 0xff,
-		(pFileInfo->dwProductVersionLS >> 0) & 0xff
+		(pFileInfo->dwFileVersionMS >> 16) & 0xffff,
+		(pFileInfo->dwFileVersionMS >> 0) & 0xffff,
+		(pFileInfo->dwFileVersionLS >> 16) & 0xffff,
+		(pFileInfo->dwFileVersionLS >> 0) & 0xffff,
+
+		(pFileInfo->dwProductVersionMS >> 16) & 0xffff,
+		(pFileInfo->dwProductVersionMS >> 0) & 0xffff,
+		(pFileInfo->dwProductVersionLS >> 16) & 0xffff,
+		(pFileInfo->dwProductVersionLS >> 0) & 0xffff
 	);
 }
