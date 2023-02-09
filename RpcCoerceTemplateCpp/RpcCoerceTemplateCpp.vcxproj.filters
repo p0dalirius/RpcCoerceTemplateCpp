@@ -51,8 +51,8 @@
     <ClCompile Include="RpcUtils\Utils.cpp">
       <Filter>Source Files\RpcUtils</Filter>
     </ClCompile>
-    <ClCompile Include="ImpersonateUser.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="RpcUtils\RpcConnection.cpp">
+      <Filter>Source Files\RpcUtils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,8 +77,8 @@
     <ClInclude Include="RpcUtils\Utils.hpp">
       <Filter>Header Files\RpcUtils</Filter>
     </ClInclude>
-    <ClInclude Include="ImpersonateUser.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="RpcUtils\RpcConnection.hpp">
+      <Filter>Header Files\RpcUtils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

