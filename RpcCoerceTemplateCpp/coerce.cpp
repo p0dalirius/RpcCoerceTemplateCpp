@@ -12,7 +12,7 @@
 
 
 ArgumentsParser parseArgs(int argc, char* argv[]) {
-	printf("Windows auth coerce using MS-EFSR::EfsRpcEncryptFileSrv() - by @podalirius_\n\n");
+	printf("Windows auth coerce using MS-EFSR::EfsRpcEncryptFileSrv() - by Remi GASCOU (Podalirius)\n\n");
 
 	ArgumentsParser parser = ArgumentsParser();
 	parser.add_string_argument("from", "-f", "--from", "", true, "IP or hostname of the machine to coerce to authenticate.");
